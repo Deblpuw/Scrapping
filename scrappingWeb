@@ -2,26 +2,29 @@
 import requests
 url = 'https://www.maisonsdumonde.com/FR/fr/c/meubles-0efb00bec42f8fb7b942b4b76ad5c077'
 
+from bs4 import BeautifulSoup
+
 page = requests.get(url)
 page
 
-from bs4 import BeautifulSoup
-import requests
-
-url = 'https://www.maisonsdumonde.com/FR/fr/c/meubles-0efb00bec42f8fb7b942b4b76ad5c077'
-page = requests.get(url)
-
 html = BeautifulSoup(page.text, 'html.parser')
-html.find('h1')
+html.find('h2')
 
 nomProduit = html.find_all('h2', {'class': 'font-weight-normal expand-link name mb-0'})
-
+print(nomProduit)
 nomProduit = [x.getText() for x in nomProduit]
 
-prix = html.find_all('div', {'class':'ml-auto font-weight-semibold price'})  #  ici on fait la requete des prix sur la page
+prix = html.find_all('p', {'class': 'block-price text-right font-weight-semibold mb-0'})
+print(prix)
+#pb-3 pr-sm-only-2 flex-shrink-1
+#<p data-v-0ecede32="" class="block-price text-right font-weight-semibold mb-0"><span data-v-0ecede32="" class="price">51,05&nbsp;€</span> <!----></p>
+#<div data-v-0ecede32="" class="h-50 d-flex justify-content-between"><!----> <p data-v-0ecede32="" class="block-price text-right font-weight-semibold mb-0"><span data-v-0ecede32="" class="price">51,05&nbsp;€</span> <!----></p></div>
+#<strong data-v-a7b1ce2e="" class="base-price font-weight-bold">51,05&nbsp;€</strong>
+
 prix = [x.getText() for x in prix]
 
-prix = html.find_all('div', {'class':'ml-auto font-weight-semibold price'})
+prix = html.find_all('div', {'span':'price'})
+#prix = html.find_all('div', {'class':'ml-auto font-weight-semibold price'})
 prix = [x.getText() for x in prix]
 prix = [x.split(" ")[0] for x in prix]
 prix = [x.replace('€','') for x in prix]
@@ -29,6 +32,8 @@ prix = [x.replace('\xa0','') for x in prix]
 prix = [float(x.replace(',','.')) for x in prix]
 
 
-print("result ....")
+print("prix ....")
 print(prix)
 print(nomProduit)
+
+
